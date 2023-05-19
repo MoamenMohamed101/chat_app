@@ -1,7 +1,6 @@
 import 'package:chat_app/screens/auth/login_screen.dart';
-import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-
+late Size mq;
 void main() {
   runApp(const MyApp());
 }
