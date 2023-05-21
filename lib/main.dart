@@ -1,13 +1,15 @@
 import 'package:chat_app/firebase_options.dart';
 import 'package:chat_app/screens/auth/login_screen.dart';
+import 'package:chat_app/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 late Size mq;
 
 void main() {
-  initializeFireBase();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
+  initializeFireBase();
 }
 
 class MyApp extends StatelessWidget {
@@ -31,7 +33,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }

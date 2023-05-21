@@ -21,3 +21,6 @@
 // =======================================================================
 // Video number 9
 // https://www.youtube.com/watch?v=OwEpeJfcMf4
+// =======================================================================
+// Video number 10
+// 1- letterSpacing in style of text to put space between letters
