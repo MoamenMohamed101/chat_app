@@ -24,3 +24,6 @@
 // =======================================================================
 // Video number 10
 // 1- letterSpacing in style of text to put space between letters
+// =======================================================================
+// Video number 11
+// 1- To give the status bar the same color of scaffold use SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky) in main and add comment from video
