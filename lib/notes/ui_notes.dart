@@ -12,13 +12,6 @@
 // 2- AnimatedPositioned : use it when make animation from point to point
 // =======================================================================
 
-// Video number 8
-// 1- Install the Firebase CLI (node js)
-// 2- run firebase login in cmd
-// 3- run dart pub global activate flutterfire_cli in cmd
-// 4- run flutterfire configure --project=chatty-77161 in project to choose type of apps
-// 5- add firebase_options
-// =======================================================================
 // Video number 9
 // https://www.youtube.com/watch?v=OwEpeJfcMf4
 // =======================================================================

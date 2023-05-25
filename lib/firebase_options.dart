@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '310241759905',
     projectId: 'chatty-77161',
     storageBucket: 'chatty-77161.appspot.com',
+    androidClientId: '310241759905-n9ia4ms8mgmv7vk37nrrsu7gi4fu6jae.apps.googleusercontent.com',
     iosClientId: '310241759905-jjlk85j2evpug9ulfvjmg5rv3026fs1m.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatApp',
   );
