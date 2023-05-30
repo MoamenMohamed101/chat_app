@@ -6,13 +6,14 @@ import 'package:flutter/services.dart';
 
 late Size mq;
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp , DeviceOrientation.portraitUp]).then((value) {
-    runApp(const MyApp());
     initializeFireBase();
-  });
+    runApp(const MyApp());
+   });
 }
 
 class MyApp extends StatelessWidget {
