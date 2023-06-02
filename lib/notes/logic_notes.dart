@@ -9,3 +9,11 @@
 // 1- Documentation of sign in with gmail : https://firebase.google.com/docs/auth/flutter/federated-auth
 
 // 2- Get method from documentation to sign in with google
+// =======================================================================
+// video 13
+// 1- log == print
+
+// 2- behavior in showSnackBar help me in shape of SnackBar
+
+// 3- sign out
+

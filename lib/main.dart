@@ -10,8 +10,8 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp , DeviceOrientation.portraitUp]).then((value) {
-    initializeFireBase();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp , DeviceOrientation.portraitUp]).then((value) async {
+    await initializeFireBase();
     runApp(const MyApp());
    });
 }

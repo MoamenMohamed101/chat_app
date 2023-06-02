@@ -1,5 +1,8 @@
+import 'dart:developer';
+import 'package:chat_app/Api/Api.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/screens/auth/login_screen.dart';
+import 'package:chat_app/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -19,15 +22,26 @@ class _SplashScreenState extends State<SplashScreen> {
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
     );
     super.initState();
+    // it can execute any code after specified duration
     Future.delayed(
       const Duration(seconds: 2),
       () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const LoginScreen(),
-          ),
-        );
+        if (Apis.auth.currentUser != null) {
+          log('\nUsers : ${Apis.auth.currentUser}');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const HomeScreen(),
+            ),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const LoginScreen(),
+            ),
+          );
+        }
       },
     );
   }

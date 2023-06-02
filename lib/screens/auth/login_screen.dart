@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:chat_app/Api/Api.dart';
 import 'package:chat_app/helper/dialogs.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/screens/home_screen.dart';
@@ -35,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
   handleGoogleBtnClick() {
     Dialogs.showProgressBar(context);
     signInWithGoogle().then((user) {
+      // for hiding CircularProgressIndicator
       Navigator.pop(context);
       if(user != null){
         log('\nUser : ${user.user}');
@@ -69,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      return await Apis.auth.signInWithCredential(credential);
     } catch(e){
       log('\nsignInWithGoogle : $e');
       Dialogs.showSnackBar(context, 'Something went wrong (Check internet)');
