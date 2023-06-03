@@ -28,7 +28,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
           leading: const CircleAvatar(
             child: Icon(CupertinoIcons.person),
           ),
-          trailing: Text(
+          trailing: const Text(
             '12:00 pm',
             style: TextStyle(color: Colors.black54),
           ),
