@@ -21,5 +21,12 @@
 // Video number 11
 // 1- To give the status bar the same color of scaffold use SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky) in main and add comment from video
 // =======================================================================
+// video 13
+// 1- log == print
+
+// 2- behavior in showSnackBar help me in shape of SnackBar
+
+// 3- sign out method
+// =======================================================================
 // video number 15
 // 1- ListTile

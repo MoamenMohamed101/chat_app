@@ -1,5 +1,5 @@
 import 'dart:developer';
-import 'package:chat_app/Api/Api.dart';
+import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/screens/auth/login_screen.dart';
 import 'package:chat_app/screens/home_screen.dart';
@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => const HomeScreen(),
+              builder: (_) => HomeScreen(),
             ),
           );
         } else {

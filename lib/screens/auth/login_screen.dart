@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:chat_app/Api/Api.dart';
+import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/helper/dialogs.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/screens/home_screen.dart';
@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const HomeScreen(),
+            builder: (_) => HomeScreen(),
           ),
         );
       }
