@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Chatty',
       theme: ThemeData(
+        useMaterial3: false,
         appBarTheme: const AppBarTheme(
           iconTheme: IconThemeData(color: Colors.black),
           backgroundColor: Colors.white,

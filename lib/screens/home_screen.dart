@@ -1,6 +1,7 @@
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
+import 'package:chat_app/screens/profile_screen.dart';
 import 'package:chat_app/widgets/chat_user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,16 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.search),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(
+                    chatUser: list[0],
+                  ),
+                ),
+              );
+            },
             icon: const Icon(Icons.more_vert),
           ),
         ],
@@ -58,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             case ConnectionState.done:
               final data = snapshot.data!.docs;
               list = data.map((e) => ChatUser.fromJson(e.data())).toList();
-              if(list.isNotEmpty){
+              if (list.isNotEmpty) {
                 return ListView.separated(
                   physics: const BouncingScrollPhysics(),
                   padding: EdgeInsets.only(top: mq.height * .01),
@@ -67,8 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   separatorBuilder: (context, index) => Container(),
                   itemCount: list.length,
                 );
-              }else{
-               return const Center(
+              } else {
+                return const Center(
                   child: Text('Please Cheek your internet !'),
                 );
               }

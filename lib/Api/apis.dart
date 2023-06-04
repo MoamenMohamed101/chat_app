@@ -31,4 +31,5 @@ class Apis {
         .doc(user.uid)
         .set(chatUser.toJson());
   }
+
 }
