@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/Api/apis.dart';
+import 'package:chat_app/helper/dialogs.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
+import 'package:chat_app/screens/auth/login_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,8 +29,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: FloatingActionButton.extended(
           backgroundColor: Colors.red,
           onPressed: () async {
-            await Apis.auth.signOut();
-            await GoogleSignIn().signOut();
+            Dialogs.showProgressBar(context);
+            await Apis.auth.signOut().then((value) async {
+              await GoogleSignIn().signOut().then((value) {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              });
+            });
           },
           label: const Text('Logout'),
           icon: const Icon(Icons.logout),
@@ -43,18 +54,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: mq.width,
                 height: mq.height * .03,
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(mq.height * .1),
-                child: CachedNetworkImage(
-                  height: mq.height * .2,
-                  width: mq.height * .2,
-                  fit: BoxFit.cover,
-                  imageUrl: widget.chatUser.image!,
-                  // placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => const CircleAvatar(
-                    child: Icon(CupertinoIcons.person),
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(mq.height * .1),
+                    child: CachedNetworkImage(
+                      height: mq.height * .2,
+                      width: mq.height * .2,
+                      fit: BoxFit.cover,
+                      imageUrl: widget.chatUser.image!,
+                      // placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => const CircleAvatar(
+                        child: Icon(CupertinoIcons.person),
+                      ),
+                    ),
                   ),
-                ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: MaterialButton(
+                      elevation: 1,
+                      shape: const CircleBorder(),
+                      color: Colors.white,
+                      onPressed: () {},
+                      child: const Icon(Icons.edit, color: Colors.blue),
+                    ),
+                  )
+                ],
               ),
               SizedBox(
                 height: mq.height * .03,
@@ -70,8 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 initialValue: widget.chatUser.name,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.person, color: Colors.blue),
-                  border:
-                      OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   hintText: 'eg. Happy Singh',
                   label: const Text('Name'),
                 ),
@@ -82,9 +108,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextFormField(
                 initialValue: widget.chatUser.about,
                 decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.info_outline, color: Colors.blue),
-                  border:
-                      OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  prefixIcon:
+                      const Icon(Icons.info_outline, color: Colors.blue),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   hintText: 'eg. Feeling Happy',
                   label: const Text('About'),
                 ),

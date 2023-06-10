@@ -26,3 +26,6 @@
 // 1- CachedNetworkImage to Load & Show Profile Picture of User
 
 // 2- wrap CachedNetworkImage by ClipRRect to control in his border
+// =======================================================================
+// video number 24
+// 1- Query Firebase Documents with .where() Clause & Doc ID (remove my account from list)

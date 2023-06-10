@@ -7,10 +7,25 @@ class Apis {
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
   static User get user => auth.currentUser!;
+  static late ChatUser me;
 
   static Future<bool> userExists() async {
     return (await firebaseFirestore.collection('users').doc(user.uid).get())
         .exists;
+  }
+
+  static Future<void> getSelfInfo() async {
+    await firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((value) async {
+      if (value.exists) {
+        me = ChatUser.fromJson(value.data()!);
+      } else {
+        await createUser().then((value) => getSelfInfo());
+      }
+    });
   }
 
   static Future<void> createUser() async {
@@ -32,4 +47,10 @@ class Apis {
         .set(chatUser.toJson());
   }
 
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
+    return firebaseFirestore
+        .collection('users')
+        .where('id', isNotEqualTo: user.uid)
+        .snapshots();
+  }
 }
