@@ -29,3 +29,6 @@
 // =======================================================================
 // video number 24
 // 1- Query Firebase Documents with .where() Clause & Doc ID (remove my account from list)
+// =======================================================================
+// video number 25
+// 1- update data on fire store

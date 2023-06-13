@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
+import 'package:chat_app/screens/chat_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,16 @@ class _ChatUserCardState extends State<ChatUserCard> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (v) => ChatScreen(
+              chatUser: widget.chatUser,
+            ),
+          ),
+        );
+      },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: mq.width * .04, vertical: 4),
         shape: RoundedRectangleBorder(
@@ -25,36 +35,35 @@ class _ChatUserCardState extends State<ChatUserCard> {
         ),
         elevation: 1,
         child: ListTile(
-          title: Text(widget.chatUser.name!),
-          subtitle: Text(widget.chatUser.about!, maxLines: 1),
-          // leading: const CircleAvatar(
-          //   child: Icon(CupertinoIcons.person),
-          // ),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(mq.height * .3),
-            child: CachedNetworkImage(
-              height: mq.height * .055,
-              width: mq.height * .055,
-              imageUrl: widget.chatUser.image!,
-              // placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) => const CircleAvatar(
-                child: Icon(CupertinoIcons.person),
+            title: Text(widget.chatUser.name!),
+            subtitle: Text(widget.chatUser.about!, maxLines: 1),
+            // leading: const CircleAvatar(
+            //   child: Icon(CupertinoIcons.person),
+            // ),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(mq.height * .3),
+              child: CachedNetworkImage(
+                height: mq.height * .055,
+                width: mq.height * .055,
+                imageUrl: widget.chatUser.image!,
+                // placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const CircleAvatar(
+                  child: Icon(CupertinoIcons.person),
+                ),
               ),
             ),
-          ),
-          // trailing: const Text(
-          //   '12:00 pm',
-          //   style: TextStyle(color: Colors.black54),
-          // ),
-          trailing: Container(
-            height: 15,
-            width: 15,
-            decoration: BoxDecoration(
-              color: Colors.greenAccent.shade400,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          )
-        ),
+            // trailing: const Text(
+            //   '12:00 pm',
+            //   style: TextStyle(color: Colors.black54),
+            // ),
+            trailing: Container(
+              height: 15,
+              width: 15,
+              decoration: BoxDecoration(
+                color: Colors.greenAccent.shade400,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            )),
       ),
     );
   }
