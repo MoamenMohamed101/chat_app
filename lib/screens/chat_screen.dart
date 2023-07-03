@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,16 +30,20 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: StreamBuilder(
-                //stream: Apis.getAllUsers(),
+                stream: Apis.getAllMessages(),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
                     case ConnectionState.active:
                     case ConnectionState.done:
-                      // final data = snapshot.data!.docs;
-                      // list = data.map((e) => ChatUser.fromJson(e.data())).toList();
-                      final list = [22 , 'ojjoijidw' , true];
+                      final data = snapshot.data!.docs;
+                      log('Data : ${jsonEncode(data[0].data())}');
+                      //list = data.map((e) => ChatUser.fromJson(e.data())).toList();
+                      final list = [22, 'ojjoijidw', true];
                       if (list.isNotEmpty) {
                         return ListView.separated(
                           physics: const BouncingScrollPhysics(),
