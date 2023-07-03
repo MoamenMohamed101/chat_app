@@ -22,13 +22,51 @@ class _ChatScreenState extends State<ChatScreen> {
           automaticallyImplyLeading: false,
           flexibleSpace: appBar(),
         ),
+        body: Column(
+          children: [
+            Expanded(
+              child: StreamBuilder(
+                //stream: Apis.getAllUsers(),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                    case ConnectionState.none:
+                    case ConnectionState.active:
+                    case ConnectionState.done:
+                      // final data = snapshot.data!.docs;
+                      // list = data.map((e) => ChatUser.fromJson(e.data())).toList();
+                      final list = [22 , 'ojjoijidw' , true];
+                      if (list.isNotEmpty) {
+                        return ListView.separated(
+                          physics: const BouncingScrollPhysics(),
+                          padding: EdgeInsets.only(top: mq.height * .01),
+                          itemBuilder: (context, index) =>
+                              Text('Message : ${list[index]}'),
+                          separatorBuilder: (context, index) => Container(),
+                          itemCount: list.length,
+                        );
+                      } else {
+                        return const Center(
+                          child: Text(
+                            'Say Hi! 👋🏻',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        );
+                      }
+                  }
+                },
+              ),
+            ),
+            chatInPut(),
+          ],
+        ),
       ),
     );
   }
 
   appBar() {
     return InkWell(
-      onTap: (){},
+      onTap: () {},
       child: Row(
         children: [
           IconButton(
@@ -49,7 +87,9 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
-          const SizedBox(width: 10,),
+          const SizedBox(
+            width: 10,
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -62,7 +102,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 2,),
+              const SizedBox(
+                height: 2,
+              ),
               const Text(
                 'Last Seen',
                 style: TextStyle(
@@ -72,6 +114,69 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ],
           )
+        ],
+      ),
+    );
+  }
+
+  chatInPut() {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+          vertical: mq.height * .01, horizontal: mq.width * .025),
+      child: Row(
+        children: [
+          Expanded(
+            child: Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15)),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.emoji_emotions,
+                        color: Colors.blueAccent, size: 25),
+                  ),
+                  const Expanded(
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        hintText: 'Type Something ...',
+                        hintStyle: TextStyle(color: Colors.blueAccent),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.image,
+                        color: Colors.blueAccent, size: 26),
+                  ),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.camera_alt_rounded,
+                        color: Colors.blueAccent, size: 26),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            width: mq.width * .02,
+          ),
+          MaterialButton(
+            onPressed: () {},
+            shape: const CircleBorder(),
+            padding:
+                const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),
+            color: Colors.green,
+            minWidth: 0,
+            child: const Icon(
+              Icons.send,
+              color: Colors.white,
+              size: 23,
+            ),
+          ),
         ],
       ),
     );
