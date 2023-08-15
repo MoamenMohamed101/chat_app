@@ -14,25 +14,12 @@ class Apis {
   static User get user => auth.currentUser!;
   static late ChatUser me;
 
+  // what is method userExists do ? it will check if user exists or not in firebase firestore database
   static Future<bool> userExists() async {
     return (await firebaseFirestore.collection('users').doc(user.uid).get())
         .exists;
   }
-
-  static Future<void> getSelfInfo() async {
-    await firebaseFirestore
-        .collection('users')
-        .doc(user.uid)
-        .get()
-        .then((value) async {
-      if (value.exists) {
-        me = ChatUser.fromJson(value.data()!);
-      } else {
-        await createUser().then((value) => getSelfInfo());
-      }
-    });
-  }
-
+  // what is method createUser do ? it will create user in firebase firestore database with user's information
   static Future<void> createUser() async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
     final chatUser = ChatUser(
@@ -52,6 +39,20 @@ class Apis {
         .set(chatUser.toJson());
   }
 
+  static Future<void> getSelfInfo() async {
+    await firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .get()
+        .then((value) async {
+      if (value.exists) {
+        me = ChatUser.fromJson(value.data()!);
+      } else {
+        await createUser().then((value) => getSelfInfo());
+      }
+    });
+  }
+
   // what is method getAllUsers do ? it will return all users except current user from firebase firestore database as a stream of QuerySnapshot<Map<String, dynamic>>
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
     return firebaseFirestore
@@ -60,6 +61,7 @@ class Apis {
         .snapshots();
   }
 
+// what is method updateUserInfo do ? it will update user info in firebase firestore database
   static Future<void> updateUserInfo() async {
     await firebaseFirestore
         .collection('users')
@@ -67,19 +69,22 @@ class Apis {
         .update({'name': me.name, 'about': me.about});
   }
 
+// what is method updateProfilePicture do ? it will update user profile picture in firebase firestore database
   static Future<void> updateProfilePicture(File file) async {
     final ext = file.path.split('.').last;
     final ref = firebaseStorage.ref().child('profile_picture/${user.uid}.$ext');
-    await ref.putFile(file , SettableMetadata(contentType: 'image/$ext')).then((p0) {
-    });
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {});
     me.image = await ref.getDownloadURL();
-    await firebaseFirestore.collection('user').doc(user.uid).update({
-      'image' : me.image
-    });
+    await firebaseFirestore
+        .collection('user')
+        .doc(user.uid)
+        .update({'image': me.image});
   }
+
+// what is method sendMessage do ? it will send message to firebase firestore database
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
-    return firebaseFirestore
-        .collection('messages')
-        .snapshots();
+    return firebaseFirestore.collection('messages').snapshots();
   }
 }

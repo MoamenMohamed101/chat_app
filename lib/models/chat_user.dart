@@ -1,3 +1,4 @@
+// why need model class in our apps? because we need to convert json data to model class and then we can use it in our apps easily.
 class ChatUser {
   String? image;
   String? about;
@@ -20,7 +21,7 @@ class ChatUser {
     this.email,
     this.pushToken,
   });
-
+  // what is this method do? it will convert json data to model class
   ChatUser.fromJson(Map<String, dynamic> json) {
     image = json['image'] ?? '';
     about = json['about'] ?? '';
@@ -32,7 +33,7 @@ class ChatUser {
     email = json['email'] ?? '';
     pushToken = json['push_token'] ?? '';
   }
-
+  // what is this method do? it will convert model class to json data
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['image'] = image;

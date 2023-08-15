@@ -11,10 +11,12 @@
 // 2- Get method from documentation to sign in with google
 // =======================================================================
 // video number 17 (very important video)
-// 1- StreamBuilder to Load Data From Cloud Firestore Firebase and show it on our screen
+// 1- How to Load Data From Cloud Firestore Firebase and show it on our screen using StreamBuilder
 // =======================================================================
 // video number 18
 // 1- Creating a Custom Model with toJson & fromJson Method
+// 2- jsonEncode - from json object to json string
+// 3- jsonDecode - from json string to json object
 // =======================================================================
 // video number 19
 // 1- Handling StreamBuilder ConnectionStates & Showing Data In Custom Card
