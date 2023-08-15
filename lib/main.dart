@@ -6,14 +6,20 @@ import 'package:flutter/services.dart';
 
 late Size mq;
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp , DeviceOrientation.portraitUp]).then((value) async {
+  // what this line do ?
+// it make my app just work in portrait mode
+  // what is portrait mode ?
+// it is when you hold your phone in vertical mode
+  SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitUp])
+      .then((value) async {
     await initializeFireBase();
     runApp(const MyApp());
-   });
+  });
 }
 
 class MyApp extends StatelessWidget {

@@ -35,35 +35,29 @@ class _ChatUserCardState extends State<ChatUserCard> {
         ),
         elevation: 1,
         child: ListTile(
-            title: Text(widget.chatUser.name!),
-            subtitle: Text(widget.chatUser.about!, maxLines: 1),
-            // leading: const CircleAvatar(
-            //   child: Icon(CupertinoIcons.person),
-            // ),
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(mq.height * .3),
-              child: CachedNetworkImage(
-                height: mq.height * .055,
-                width: mq.height * .055,
-                imageUrl: widget.chatUser.image!,
-                // placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => const CircleAvatar(
-                  child: Icon(CupertinoIcons.person),
-                ),
+          title: Text(widget.chatUser.name!),
+          subtitle: Text(widget.chatUser.about!, maxLines: 1),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(mq.height * .3),
+            child: CachedNetworkImage(
+              height: mq.height * .055,
+              width: mq.height * .055,
+              imageUrl: widget.chatUser.image!,
+              // placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => const CircleAvatar(
+                child: Icon(CupertinoIcons.person),
               ),
             ),
-            // trailing: const Text(
-            //   '12:00 pm',
-            //   style: TextStyle(color: Colors.black54),
-            // ),
-            trailing: Container(
-              height: 15,
-              width: 15,
-              decoration: BoxDecoration(
-                color: Colors.greenAccent.shade400,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            )),
+          ),
+          trailing: Container(
+            height: 15,
+            width: 15,
+            decoration: BoxDecoration(
+              color: Colors.greenAccent.shade400,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Apis {
+  // what is static line do ? it will create only one instance of FirebaseAuth, FirebaseFirestore, FirebaseStorage
   static FirebaseAuth auth = FirebaseAuth.instance;
   static FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   static FirebaseStorage firebaseStorage = FirebaseStorage.instance;
@@ -51,6 +52,7 @@ class Apis {
         .set(chatUser.toJson());
   }
 
+  // what is method getAllUsers do ? it will return all users except current user from firebase firestore database as a stream of QuerySnapshot<Map<String, dynamic>>
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
     return firebaseFirestore
         .collection('users')

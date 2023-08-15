@@ -102,6 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Icon(Icons.add_comment_rounded),
             ),
           ),
+          // what is StreamBuilder ? it is a widget that can listen to any stream and rebuild itself when the stream emits new data
+          // is streamBuilder real time ? yes it is real time
           body: StreamBuilder(
             stream: Apis.getAllUsers(),
             builder: (context, snapshot) {

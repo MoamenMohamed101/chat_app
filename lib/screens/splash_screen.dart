@@ -26,6 +26,8 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(
       const Duration(seconds: 2),
       () {
+        // what this line do ?
+        // it will check if user is logged in or not and then navigate to home screen or login screen
         if (Apis.auth.currentUser != null) {
           log('\nUsers : ${Apis.auth.currentUser}');
           Navigator.pushReplacement(

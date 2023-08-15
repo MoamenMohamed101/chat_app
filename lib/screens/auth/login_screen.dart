@@ -39,8 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
       // for hiding CircularProgressIndicator
       Navigator.pop(context);
       if(user != null){
-        log('\nUser : ${user.user}');
-        log('\nUserAdditionalInfo : ${user.additionalUserInfo}');
         if((await Apis.userExists())){
           Navigator.pushReplacement(
             context,
@@ -61,14 +59,15 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
   }
-
+  // What is this function do? (it's for google sign in authentication)
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      // what is this line do? (it's for check internet connection)
       await InternetAddress.lookup('google.com');
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn(
         scopes: ['email', 'profile'],
-        hostedDomain: '',
+        //hostedDomain: '',
       ).signIn();
 
       // Obtain the auth details from the request
