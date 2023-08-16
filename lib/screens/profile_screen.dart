@@ -12,8 +12,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key, required this.chatUser}) : super(key: key);
   final ChatUser chatUser;
+
+  const ProfileScreen({Key? key, required this.chatUser}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -27,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
+      // for hiding keyboard when user tap on screen
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -45,7 +47,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
+                      builder: (context) => const LoginScreen(),
+                    ),
                   );
                 });
               });
@@ -86,7 +89,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: mq.height * .2,
                                 fit: BoxFit.cover,
                                 imageUrl: widget.chatUser.image!,
-                                // placeholder: (context, url) => CircularProgressIndicator(),
                                 errorWidget: (context, url, error) =>
                                     const CircleAvatar(
                                   child: Icon(CupertinoIcons.person),
@@ -127,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       hintText: 'eg. Happy Singh',
                       label: const Text('Name'),
                     ),
-                    onSaved: (val) => Apis.me.name = val,
+                    onSaved: (val) => Apis.me.name = val,// what is the use of onSaved? // onSaved is used to save the value of TextFormField in a variable
                     validator: (val) =>
                         val!.isNotEmpty ? null : 'Required Field',
                   ),
@@ -160,7 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         formKey.currentState!.save();
                         Apis.updateUserInfo().then((value) {
                           Dialogs.showSnackBar(
-                              context, 'Profile updated Successfully!');
+                            context,
+                            'Profile updated Successfully!',
+                          );
                         });
                       }
                     },
@@ -213,8 +217,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     onPressed: () async {
                       final ImagePicker picker = ImagePicker();
-                      final XFile? image =
-                          await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+                      final XFile? image = await picker.pickImage(
+                          source: ImageSource.gallery, imageQuality: 80);
                       if (image != null) {
                         log('Image Path ${image.path} -- MimeType: ${image.mimeType}');
                         setState(() {
@@ -234,8 +238,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     onPressed: () async {
                       final ImagePicker picker = ImagePicker();
-                      final XFile? image =
-                          await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+                      final XFile? image = await picker.pickImage(
+                          source: ImageSource.camera, imageQuality: 80);
                       if (image != null) {
                         log('Image Path ${image.path}');
                         setState(() {

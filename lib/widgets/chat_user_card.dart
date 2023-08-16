@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 
 class ChatUserCard extends StatefulWidget {
   final ChatUser chatUser;
-
   const ChatUserCard({Key? key, required this.chatUser}) : super(key: key);
 
   @override
@@ -43,7 +42,6 @@ class _ChatUserCardState extends State<ChatUserCard> {
               height: mq.height * .055,
               width: mq.height * .055,
               imageUrl: widget.chatUser.image!,
-              // placeholder: (context, url) => CircularProgressIndicator(),
               errorWidget: (context, url, error) => const CircleAvatar(
                 child: Icon(CupertinoIcons.person),
               ),

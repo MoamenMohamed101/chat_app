@@ -12,6 +12,7 @@ class Apis {
   static FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
   static User get user => auth.currentUser!;
+  // for storing self information
   static late ChatUser me;
 
   // what is method userExists do ? it will check if user exists or not in firebase firestore database
@@ -38,7 +39,7 @@ class Apis {
         .doc(user.uid)
         .set(chatUser.toJson());
   }
-
+  // what is method getSelfInfo do ? it will get user's information from firebase firestore database and store it in me variable
   static Future<void> getSelfInfo() async {
     await firebaseFirestore
         .collection('users')
