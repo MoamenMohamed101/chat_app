@@ -42,15 +42,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     case ConnectionState.done:
                       final data = snapshot.data!.docs;
                       log('Data : ${jsonEncode(data[0].data())}');
-                      //list = data.map((e) => ChatUser.fromJson(e.data())).toList();
                       final list = [22, 'ojjoijidw', true];
                       if (list.isNotEmpty) {
                         return ListView.separated(
                           physics: const BouncingScrollPhysics(),
                           padding: EdgeInsets.only(top: mq.height * .01),
                           itemBuilder: (context, index) =>
-                              Text('Message : ${list[index]}'),
-                          separatorBuilder: (context, index) => Container(),
+                              Text('Message : ${jsonEncode(data[0].data())}'),
+                          separatorBuilder: (context, index) => const SizedBox(height: 15),
                           itemCount: list.length,
                         );
                       } else {
@@ -89,7 +88,6 @@ class _ChatScreenState extends State<ChatScreen> {
               height: mq.height * .05,
               width: mq.height * .05,
               imageUrl: widget.chatUser.image!,
-              // placeholder: (context, url) => CircularProgressIndicator(),
               errorWidget: (context, url, error) => const CircleAvatar(
                 child: Icon(CupertinoIcons.person),
               ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
@@ -68,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   );
+                  print(jsonEncode(Apis.me));
                 },
                 icon: const Icon(Icons.more_vert),
               ),

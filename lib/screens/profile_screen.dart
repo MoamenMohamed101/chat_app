@@ -27,8 +27,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
       // for hiding keyboard when user tap on screen
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -70,8 +70,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Stack(
                     children: [
-                      _image != null
-                          ? ClipRRect(
+                      _image != null ? ClipRRect(
                               borderRadius:
                                   BorderRadius.circular(mq.height * .1),
                               child: Image.file(
@@ -80,8 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: mq.height * .2,
                                 fit: BoxFit.cover,
                               ),
-                            )
-                          : ClipRRect(
+                            ) : ClipRRect(
                               borderRadius:
                                   BorderRadius.circular(mq.height * .1),
                               child: CachedNetworkImage(
@@ -226,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       }
                       Apis.updateProfilePicture(File(_image!));
-                      Navigator.pop(context);
+                      Navigator.pop(context); // why warning ? because we are using context of showModalBottomSheet and we are popping the context of showModalBottomSheet
                     },
                     child: Image.asset('assets/images/add_image.png'),
                   ),

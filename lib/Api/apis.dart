@@ -12,6 +12,7 @@ class Apis {
   static FirebaseStorage firebaseStorage = FirebaseStorage.instance;
 
   static User get user => auth.currentUser!;
+
   // for storing self information
   static late ChatUser me;
 
@@ -20,6 +21,7 @@ class Apis {
     return (await firebaseFirestore.collection('users').doc(user.uid).get())
         .exists;
   }
+
   // what is method createUser do ? it will create user in firebase firestore database with user's information
   static Future<void> createUser() async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
@@ -30,6 +32,7 @@ class Apis {
       createdAt: time,
       email: user.email.toString(),
       image: user.photoURL.toString(),
+      // what is photoURL ? it will return user's profile picture url
       isOnline: false,
       lastActive: time,
       pushToken: '',
@@ -39,6 +42,7 @@ class Apis {
         .doc(user.uid)
         .set(chatUser.toJson());
   }
+
   // what is method getSelfInfo do ? it will get user's information from firebase firestore database and store it in me variable
   static Future<void> getSelfInfo() async {
     await firebaseFirestore
@@ -78,13 +82,12 @@ class Apis {
         .putFile(file, SettableMetadata(contentType: 'image/$ext'))
         .then((p0) {});
     me.image = await ref.getDownloadURL();
-    await firebaseFirestore
-        .collection('user')
-        .doc(user.uid)
-        .update({'image': me.image});
+    await firebaseFirestore.collection('user').doc(user.uid).update({
+      'image': me.image
+    }); // what this line do ? it will update user profile picture in firebase firestore database
   }
 
-// what is method sendMessage do ? it will send message to firebase firestore database
+// it will return all messages from firebase firestore database as a stream of QuerySnapshot<Map<String, dynamic>>
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
     return firebaseFirestore.collection('messages').snapshots();
   }

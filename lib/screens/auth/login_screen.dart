@@ -40,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pop(context);
       if(user != null){
         if((await Apis.userExists())){
+          // ignore: use_build_context_synchronously
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
