@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   );
-                  print(jsonEncode(Apis.me));
+                  debugPrint(jsonEncode(Apis.me));
                 },
                 icon: const Icon(Icons.more_vert),
               ),
@@ -125,9 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 case ConnectionState.active:
                 case ConnectionState.done:
                   final data = snapshot.data!.docs;
-                  list = data
-                      .map((e) => ChatUser.fromJson(e.data()))
-                      .toList(); // what this line do ? it convert the data from the stream to a list of ChatUser objects
+                  list = data.map((e) => ChatUser.fromJson(e.data())).toList(); // what this line do ? it convert the data from the stream to a list of ChatUser objects
                   if (list.isNotEmpty) {
                     return ListView.builder(
                       physics: const BouncingScrollPhysics(),

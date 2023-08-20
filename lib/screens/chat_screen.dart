@@ -1,10 +1,9 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
+import 'package:chat_app/models/message.dart';
+import 'package:chat_app/widgets/message_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,10 +17,14 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  List<Message> list = [];
+  var textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 234, 248, 255),
         appBar: AppBar(
           automaticallyImplyLeading: false,
           flexibleSpace: appBar(),
@@ -30,26 +33,27 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: StreamBuilder(
-                stream: Apis.getAllMessages(),
+                stream: Apis.getAllMessages(
+                  widget.chatUser
+                ),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
                     case ConnectionState.none:
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const SizedBox();
                     case ConnectionState.active:
                     case ConnectionState.done:
                       final data = snapshot.data!.docs;
-                      log('Data : ${jsonEncode(data[0].data())}');
-                      final list = [22, 'ojjoijidw', true];
+                      list = data.map((e) => Message.fromJson(e.data())).toList();
                       if (list.isNotEmpty) {
                         return ListView.separated(
                           physics: const BouncingScrollPhysics(),
                           padding: EdgeInsets.only(top: mq.height * .01),
-                          itemBuilder: (context, index) =>
-                              Text('Message : ${jsonEncode(data[0].data())}'),
-                          separatorBuilder: (context, index) => const SizedBox(height: 15),
+                          itemBuilder: (context, index) => MassageCard(
+                            message: list[index],
+                          ),
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 15),
                           itemCount: list.length,
                         );
                       } else {
@@ -142,11 +146,12 @@ class _ChatScreenState extends State<ChatScreen> {
                     icon: const Icon(Icons.emoji_emotions,
                         color: Colors.blueAccent, size: 25),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: TextField(
+                      controller: textController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Type Something ...',
                         hintStyle: TextStyle(color: Colors.blueAccent),
                         border: InputBorder.none,
@@ -171,7 +176,12 @@ class _ChatScreenState extends State<ChatScreen> {
             width: mq.width * .02,
           ),
           MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              if (textController.text.isNotEmpty) {
+                Apis.sendMessage(textController.text, widget.chatUser);
+                textController.clear();
+              }
+            },
             shape: const CircleBorder(),
             padding:
                 const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 10),

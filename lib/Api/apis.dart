@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:chat_app/models/chat_user.dart';
+import 'package:chat_app/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -87,8 +88,29 @@ class Apis {
     }); // what this line do ? it will update user profile picture in firebase firestore database
   }
 
-// it will return all messages from firebase firestore database as a stream of QuerySnapshot<Map<String, dynamic>>
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages() {
-    return firebaseFirestore.collection('messages').snapshots();
+  // what is method getConversationId do ? it will return conversation id between current user and another user by comparing their ids and return the smallest one as a string
+  static getConversationId(String id) =>
+      user.uid.hashCode <= id.hashCode ? '${user.uid}-$id' : '$id-${user.uid}';
+
+  // what is method getAllMessages do ? it will return all messages between current user and another user as a stream of QuerySnapshot<Map<String, dynamic>>
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(ChatUser chatUser) {
+    return firebaseFirestore
+        .collection('chats/${getConversationId(chatUser.id!)}/messages/')
+        .snapshots();
+  }
+  // what is method sendMessage do ? it will send message to another user by adding it to firebase firestore database
+  static Future<void> sendMessage(String msg, ChatUser chatUser) async {
+    final time = DateTime.now().millisecondsSinceEpoch.toString();
+    final message = Message(
+      msg: msg,
+      read: '',
+      told: chatUser.id!,
+      type: Type.text,
+      fromId: user.uid,
+      sent: time,
+    );
+    final ref = firebaseFirestore
+        .collection('chats/${getConversationId(chatUser.id!)}/messages/');
+        await ref.doc(time).set(message.toJson());
   }
 }
