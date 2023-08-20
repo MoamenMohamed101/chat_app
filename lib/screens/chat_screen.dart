@@ -1,9 +1,11 @@
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:chat_app/widgets/message_card.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +21,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   List<Message> list = [];
   var textController = TextEditingController();
+  var showEmoji = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Expanded(
               child: StreamBuilder(
-                stream: Apis.getAllMessages(
-                  widget.chatUser
-                ),
+                stream: Apis.getAllMessages(widget.chatUser),
                 builder: (context, snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.waiting:
@@ -44,7 +45,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     case ConnectionState.active:
                     case ConnectionState.done:
                       final data = snapshot.data!.docs;
-                      list = data.map((e) => Message.fromJson(e.data())).toList();
+                      list =
+                          data.map((e) => Message.fromJson(e.data())).toList();
                       if (list.isNotEmpty) {
                         return ListView.separated(
                           physics: const BouncingScrollPhysics(),
@@ -69,6 +71,17 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             chatInPut(),
+            SizedBox(
+              height: mq.height * .35,
+              child: EmojiPicker(
+                textEditingController: textController,
+                // pass here the same [TextEditingController] that is connected to your input field, usually a [TextFormField]
+                config: Config(
+                  columns: 7,
+                  emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -142,7 +155,11 @@ class _ChatScreenState extends State<ChatScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        showEmoji = !showEmoji;
+                      });
+                    },
                     icon: const Icon(Icons.emoji_emotions,
                         color: Colors.blueAccent, size: 25),
                   ),

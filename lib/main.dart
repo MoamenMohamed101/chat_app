@@ -52,3 +52,5 @@ class MyApp extends StatelessWidget {
 initializeFireBase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
+//TODO
+// video 38 , 39

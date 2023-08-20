@@ -1,4 +1,5 @@
 import 'package:chat_app/Api/apis.dart';
+import 'package:chat_app/helper/my_data_unit.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,13 @@ class _MassageCardState extends State<MassageCard> {
         ? greenMessage()
         : blueMessage();
   }
+  // Other message
   blueMessage() {
+    if(widget.message.read.isEmpty){
+      Apis.updateMessageReadStatus(widget.message);
+      print('Done update');
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -48,14 +55,14 @@ class _MassageCardState extends State<MassageCard> {
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
           child: Text(
-            widget.message.sent,
+            MyDataUnit.getFormattedTime(context: context, time: widget.message.sent),
             style: const TextStyle(fontSize: 13, color: Colors.black54),
           ),
         ),
       ],
     );
   }
-
+  // My message
   greenMessage() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -65,13 +72,17 @@ class _MassageCardState extends State<MassageCard> {
             SizedBox(
               width: mq.width * .04,
             ),
-            const Icon(
+            if(widget.message.read.isNotEmpty)
+             const Icon(
               Icons.done_all_rounded,
               color: Colors.blue,
               size: 20,
             ),
+            SizedBox(
+              width: mq.width * .01,
+            ),
             Text(
-              '${widget.message.read} 12:00 am',
+              MyDataUnit.getFormattedTime(context: context, time: widget.message.sent),
               style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ],
