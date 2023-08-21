@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 
 class MyDataUnit {
+  // this method will return formatted time
   static String getFormattedTime(
       {required BuildContext context, required String time}) {
-    final date = DateTime.fromMicrosecondsSinceEpoch(int.parse(time));
+    final date = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     return TimeOfDay.fromDateTime(date).format(context);
   }
-
+  // this method will return formatted date
   static String getLastMessageTime(
       {required BuildContext context, required String time}) {
-    final DateTime sent = DateTime.fromMicrosecondsSinceEpoch(int.parse(time));
+    final DateTime sent = DateTime.fromMillisecondsSinceEpoch(int.parse(time));
     final DateTime now = DateTime.now();
     if (now.day == sent.day &&
         now.month == sent.month &&

@@ -93,39 +93,49 @@ class Apis {
       user.uid.hashCode <= id.hashCode ? '${user.uid}-$id' : '$id-${user.uid}';
 
   // what is method getAllMessages do ? it will return all messages between current user and another user as a stream of QuerySnapshot<Map<String, dynamic>>
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(ChatUser chatUser) {
+  // how to handle order of messages ? you can order messages by the time that they were sent
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getAllMessages(
+      ChatUser chatUser) {
     return firebaseFirestore
         .collection('chats/${getConversationId(chatUser.id!)}/messages/')
-    // .orderBy(descending: true , 'sent')
         .snapshots();
   }
+
   // what is method sendMessage do ? it will send message to another user by adding it to firebase firestore database
   static Future<void> sendMessage(String msg, ChatUser chatUser) async {
-    final time = DateTime.now().millisecondsSinceEpoch.toString();
+    final time = DateTime.now().millisecondsSinceEpoch.toString(); // what is this line do ? it will get current time in milliseconds
     final message = Message(
       msg: msg,
       read: '',
-      told: chatUser.id!, // what is told ? it is the id of the user that the message will be sent to
+      told: chatUser.id!,
+      // what is told ? it is the id of the user that the message will be sent to
       type: Type.text,
-      fromId: user.uid, // what is fromId ? it is the id of the user that the message will be sent from
+      fromId: user.uid,
+      // what is fromId ? it is the id of the user that the message will be sent from
       sent: time,
     );
     final ref = firebaseFirestore
         .collection('chats/${getConversationId(chatUser.id!)}/messages/');
-        await ref.doc(time).set(message.toJson());
+    await ref.doc(time).set(message.toJson());
   }
+
   // what is method updateMessageReadStatus do ? it will update message read status in firebase firestore database by adding the time that the message was read to the message
   static Future<void> updateMessageReadStatus(Message message) async {
     final ref = firebaseFirestore
         .collection('chats/${getConversationId(message.fromId)}/messages/');
-    await ref.doc(message.sent).update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
+    await ref
+        .doc(message.sent)
+        .update({'read': DateTime.now().millisecondsSinceEpoch.toString()});
   }
+
   // what is method getLastMessages do ? it will return last message between current user and another user
   static Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessages(
       ChatUser chatUser) {
     return firebaseFirestore
         .collection('chats/${getConversationId(chatUser.id!)}/messages/')
-        .orderBy('sent', descending: true) // what is this line do ? it will order the messages by the time that they were sent
+        .orderBy('sent',
+            descending:
+                true) // what is this line do ? it will order the messages by the time that they were sent
         .limit(1)
         .snapshots();
   }

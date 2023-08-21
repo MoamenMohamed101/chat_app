@@ -16,9 +16,7 @@ class MassageCard extends StatefulWidget {
 class _MassageCardState extends State<MassageCard> {
   @override
   Widget build(BuildContext context) {
-    return Apis.user.uid == widget.message.fromId
-        ? greenMessage()
-        : blueMessage();
+    return Apis.user.uid == widget.message.fromId ? greenMessage() : blueMessage(); // if message is from me then show green message else show blue message
   }
   // Other message
   blueMessage() {

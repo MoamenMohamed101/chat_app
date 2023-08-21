@@ -25,64 +25,81 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 234, 248, 255),
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          flexibleSpace: appBar(),
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: StreamBuilder(
-                stream: Apis.getAllMessages(widget.chatUser),
-                builder: (context, snapshot) {
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                    case ConnectionState.none:
-                      return const SizedBox();
-                    case ConnectionState.active:
-                    case ConnectionState.done:
-                      final data = snapshot.data!.docs;
-                      list =
-                          data.map((e) => Message.fromJson(e.data())).toList();
-                      if (list.isNotEmpty) {
-                        return ListView.separated(
-                          physics: const BouncingScrollPhysics(),
-                          padding: EdgeInsets.only(top: mq.height * .01),
-                          itemBuilder: (context, index) => MassageCard(
-                            message: list[index],
-                          ),
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 15),
-                          itemCount: list.length,
-                        );
-                      } else {
-                        return const Center(
-                          child: Text(
-                            'Say Hi! 👋🏻',
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        );
-                      }
-                  }
-                },
-              ),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SafeArea(
+        child: WillPopScope(
+          onWillPop: () {
+            if (showEmoji) {
+              setState(() {
+                showEmoji = !showEmoji;
+              });
+              return Future.value(false);
+            } else {
+              return Future.value(true);
+            }
+          },
+          child: Scaffold(
+            backgroundColor: const Color.fromARGB(255, 234, 248, 255),
+            appBar: AppBar(
+              automaticallyImplyLeading: false,
+              flexibleSpace: appBar(),
             ),
-            chatInPut(),
-            SizedBox(
-              height: mq.height * .35,
-              child: EmojiPicker(
-                textEditingController: textController,
-                // pass here the same [TextEditingController] that is connected to your input field, usually a [TextFormField]
-                config: Config(
-                  columns: 7,
-                  emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+            body: Column(
+              children: [
+                Expanded(
+                  child: StreamBuilder(
+                    stream: Apis.getAllMessages(widget.chatUser),
+                    builder: (context, snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                        case ConnectionState.none:
+                          return const SizedBox();
+                        case ConnectionState.active:
+                        case ConnectionState.done:
+                          final data = snapshot.data!.docs;
+                          list = data
+                              .map((e) => Message.fromJson(e.data()))
+                              .toList();
+                          if (list.isNotEmpty) {
+                            return ListView.separated(
+                              physics: const BouncingScrollPhysics(),
+                              padding: EdgeInsets.only(top: mq.height * .01),
+                              itemBuilder: (context, index) => MassageCard(
+                                message: list[index],
+                              ),
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 15),
+                              itemCount: list.length,
+                            );
+                          } else {
+                            return const Center(
+                              child: Text(
+                                'Say Hi! 👋🏻',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            );
+                          }
+                      }
+                    },
+                  ),
                 ),
-              ),
-            )
-          ],
+                chatInPut(),
+                if (showEmoji)
+                  SizedBox(
+                    height: mq.height * .35,
+                    child: EmojiPicker(
+                      textEditingController: textController,
+                      config: Config(
+                        bgColor: const Color.fromARGB(255, 234, 248, 255),
+                        columns: 8,
+                        emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                      ),
+                    ),
+                  )
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -165,6 +182,14 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   Expanded(
                     child: TextField(
+                      onTap: () {
+                        setState(() {
+                          if (showEmoji) {
+                            FocusScope.of(context).unfocus();
+                            showEmoji = !showEmoji;
+                          }
+                        });
+                      },
                       controller: textController,
                       keyboardType: TextInputType.multiline,
                       maxLines: null,
