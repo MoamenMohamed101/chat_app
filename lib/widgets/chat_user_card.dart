@@ -56,8 +56,13 @@ class _ChatUserCardState extends State<ChatUserCard> {
             return ListTile(
               title: Text(widget.chatUser.name!),
               subtitle: Text(
-                  message != null ? message!.msg : widget.chatUser.about!,
-                  maxLines: 1,),
+                message != null
+                    ? message!.type == Type.image
+                        ? 'Image'
+                        : message!.msg
+                    : widget.chatUser.about!,
+                maxLines: 1,
+              ),
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(mq.height * .3),
                 child: CachedNetworkImage(
@@ -82,7 +87,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
                           ),
                         )
                       : Text(
-                          MyDataUnit.getLastMessageTime(
+                MyDateUtil.getLastMessageTime(
                             context: context,
                             time: message!.sent,
                           ),

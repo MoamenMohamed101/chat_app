@@ -88,6 +88,22 @@ class Apis {
     }); // what this line do ? it will update user profile picture in firebase firestore database
   }
 
+  // what is method getUserInfo do ? it will return user info from firebase firestore database as a stream of QuerySnapshot<Map<String, dynamic>>
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getUserInfo(
+      ChatUser chatUser) {
+    return firebaseFirestore
+        .collection('users')
+        .where('id', isEqualTo: chatUser.id)
+        .snapshots();
+  }
+  // what is method updateActiveStatus do ? it will update user active status in firebase firestore database by adding the time that the user was active to the user
+  static Future<void> updateActiveStatus(bool isOnline){
+    return firebaseFirestore.collection('users').doc(user.uid).update({
+      'is_online': isOnline,
+      'last active': DateTime.now().millisecondsSinceEpoch.toString(),
+    });
+  }
+
   // what is method getConversationId do ? it will return conversation id between current user and another user by comparing their ids and return the smallest one as a string
   static getConversationId(String id) =>
       user.uid.hashCode <= id.hashCode ? '${user.uid}-$id' : '$id-${user.uid}';
@@ -98,18 +114,22 @@ class Apis {
       ChatUser chatUser) {
     return firebaseFirestore
         .collection('chats/${getConversationId(chatUser.id!)}/messages/')
+        .orderBy('sent', descending: true)
         .snapshots();
   }
 
   // what is method sendMessage do ? it will send message to another user by adding it to firebase firestore database
-  static Future<void> sendMessage(String msg, ChatUser chatUser) async {
-    final time = DateTime.now().millisecondsSinceEpoch.toString(); // what is this line do ? it will get current time in milliseconds
+  static Future<void> sendMessage(
+      String msg, ChatUser chatUser, Type type) async {
+    final time = DateTime.now()
+        .millisecondsSinceEpoch
+        .toString(); // what is this line do ? it will get current time in milliseconds
     final message = Message(
       msg: msg,
       read: '',
       told: chatUser.id!,
       // what is told ? it is the id of the user that the message will be sent to
-      type: Type.text,
+      type: type,
       fromId: user.uid,
       // what is fromId ? it is the id of the user that the message will be sent from
       sent: time,
@@ -138,5 +158,16 @@ class Apis {
                 true) // what is this line do ? it will order the messages by the time that they were sent
         .limit(1)
         .snapshots();
+  }
+
+  static sendChatImage(File file, ChatUser chatUser) async {
+    final ext = file.path.split('.').last;
+    final ref = firebaseStorage.ref().child(
+        'image/${getConversationId(chatUser.id!)}/${DateTime.now().millisecondsSinceEpoch}.$ext');
+    await ref
+        .putFile(file, SettableMetadata(contentType: 'image/$ext'))
+        .then((p0) {});
+    final imageUrl = await ref.getDownloadURL();
+    await sendMessage(imageUrl, chatUser, Type.image);
   }
 }

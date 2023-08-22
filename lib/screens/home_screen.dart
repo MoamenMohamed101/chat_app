@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
@@ -7,6 +8,7 @@ import 'package:chat_app/screens/profile_screen.dart';
 import 'package:chat_app/widgets/chat_user_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -24,6 +26,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Apis.getSelfInfo();
+    Apis.updateActiveStatus(true);
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      log('Message : $message');
+      if(message!.contains('paused')) {
+        Apis.updateActiveStatus(false);
+      } else if(message.contains('resumed')) {
+        Apis.updateActiveStatus(true);
+      }
+      return Future.value(message); // what is this line do ? it will return the message that the app received
+    });
   }
 
   @override

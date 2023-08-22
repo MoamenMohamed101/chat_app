@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/Api/apis.dart';
+import 'package:chat_app/helper/my_data_unit.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/models/message.dart';
@@ -8,6 +9,7 @@ import 'package:chat_app/widgets/message_card.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatScreen extends StatefulWidget {
   final ChatUser chatUser;
@@ -21,8 +23,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   List<Message> list = [];
   var textController = TextEditingController();
-  var showEmoji = false;
-
+  var showEmoji = false, isUploading = false;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -63,6 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               .toList();
                           if (list.isNotEmpty) {
                             return ListView.separated(
+                              reverse: true,
                               physics: const BouncingScrollPhysics(),
                               padding: EdgeInsets.only(top: mq.height * .01),
                               itemBuilder: (context, index) => MassageCard(
@@ -84,6 +86,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   ),
                 ),
+                if (isUploading)
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                      child: CircularProgressIndicator(strokeAlign: 2),
+                    ),
+                  ),
                 chatInPut(),
                 if (showEmoji)
                   SizedBox(
@@ -107,54 +118,69 @@ class _ChatScreenState extends State<ChatScreen> {
 
   appBar() {
     return InkWell(
-      onTap: () {},
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back, color: Colors.black45),
-          ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(mq.height * .3),
-            child: CachedNetworkImage(
-              height: mq.height * .05,
-              width: mq.height * .05,
-              imageUrl: widget.chatUser.image!,
-              errorWidget: (context, url, error) => const CircleAvatar(
-                child: Icon(CupertinoIcons.person),
-              ),
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
+      onTap: (){},
+      child: StreamBuilder(
+        stream: Apis.getUserInfo(widget.chatUser),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          }
+          final data = snapshot.data!.docs;
+          final list = data.map((e) => ChatUser.fromJson(e.data())).toList();
+          return Row(
             children: [
-              Text(
-                widget.chatUser.name!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.arrow_back, color: Colors.black45),
+              ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(mq.height * .3),
+                child: CachedNetworkImage(
+                  height: mq.height * .05,
+                  width: mq.height * .05,
+                  imageUrl:
+                      list.isNotEmpty ? list[0].image! : widget.chatUser.image!,
+                  errorWidget: (context, url, error) => const CircleAvatar(
+                    child: Icon(CupertinoIcons.person),
+                  ),
                 ),
               ),
               const SizedBox(
-                height: 2,
+                width: 10,
               ),
-              const Text(
-                'Last Seen',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black45,
-                ),
-              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    list.isNotEmpty ? list[0].name! : widget.chatUser.name!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  Text(
+                    list.isNotEmpty
+                        ? list[0].isOnline!
+                            ? 'onLine'
+                            : MyDateUtil.getLastActiveTime(context: context, lastActive: list[0].lastActive!)
+                        : MyDateUtil.getLastActiveTime(context: context, lastActive: widget.chatUser.lastActive!),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black45,
+                    ),
+                  ),
+                ],
+              )
             ],
-          )
-        ],
+          );
+        },
       ),
     );
   }
@@ -201,14 +227,44 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      final List<XFile> images =
+                          await picker.pickMultiImage(imageQuality: 70);
+                      for (final i in images) {
+                        setState(() {
+                          isUploading = true;
+                        });
+                        await Apis.sendChatImage(File(i.path), widget.chatUser);
+                        setState(() {
+                          isUploading = false;
+                        });
+                      }
+                    },
                     icon: const Icon(Icons.image,
                         color: Colors.blueAccent, size: 26),
                   ),
                   IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.camera_alt_rounded,
-                        color: Colors.blueAccent, size: 26),
+                    onPressed: () async {
+                      final ImagePicker picker = ImagePicker();
+                      final XFile? image = await picker.pickImage(
+                          source: ImageSource.camera, imageQuality: 70);
+                      if (image != null) {
+                        setState(() {
+                          isUploading = true;
+                        });
+                        await Apis.sendChatImage(
+                            File(image.path), widget.chatUser);
+                        setState(() {
+                          isUploading = false;
+                        });
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.camera_alt_rounded,
+                      color: Colors.blueAccent,
+                      size: 26,
+                    ),
                   ),
                 ],
               ),
@@ -220,7 +276,8 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialButton(
             onPressed: () {
               if (textController.text.isNotEmpty) {
-                Apis.sendMessage(textController.text, widget.chatUser);
+                Apis.sendMessage(
+                    textController.text, widget.chatUser, Type.text);
                 textController.clear();
               }
             },

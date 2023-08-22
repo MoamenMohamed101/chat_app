@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/helper/my_data_unit.dart';
 import 'package:chat_app/main.dart';
@@ -16,11 +17,14 @@ class MassageCard extends StatefulWidget {
 class _MassageCardState extends State<MassageCard> {
   @override
   Widget build(BuildContext context) {
-    return Apis.user.uid == widget.message.fromId ? greenMessage() : blueMessage(); // if message is from me then show green message else show blue message
+    return Apis.user.uid == widget.message.fromId
+        ? greenMessage()
+        : blueMessage(); // if message is from me then show green message else show blue message
   }
+
   // Other message
   blueMessage() {
-    if(widget.message.read.isEmpty){
+    if (widget.message.read.isEmpty) {
       Apis.updateMessageReadStatus(widget.message);
       print('Done update');
     }
@@ -34,7 +38,9 @@ class _MassageCardState extends State<MassageCard> {
               horizontal: mq.width * .04,
               vertical: mq.height * .01,
             ),
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image
+                ? mq.width * .03
+                : mq.width * .04),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.lightBlue),
               borderRadius: const BorderRadius.only(
@@ -44,22 +50,43 @@ class _MassageCardState extends State<MassageCard> {
               ),
               color: const Color.fromARGB(255, 221, 245, 255),
             ),
-            child: Text(
-              widget.message.msg,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            ),
+            child: widget.message.type == Type.text
+                ? Text(
+                    widget.message.msg,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  )
+                :
+            ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) =>
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.image,
+                        size: 70,
+                      ),
+                    ),
+                  ),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(right: mq.width * .04),
           child: Text(
-            MyDataUnit.getFormattedTime(context: context, time: widget.message.sent),
+            MyDateUtil.getFormattedTime(
+                context: context, time: widget.message.sent),
             style: const TextStyle(fontSize: 13, color: Colors.black54),
           ),
         ),
       ],
     );
   }
+
   // My message
   greenMessage() {
     return Row(
@@ -70,17 +97,18 @@ class _MassageCardState extends State<MassageCard> {
             SizedBox(
               width: mq.width * .04,
             ),
-            if(widget.message.read.isNotEmpty)
-             const Icon(
-              Icons.done_all_rounded,
-              color: Colors.blue,
-              size: 20,
-            ),
+            if (widget.message.read.isNotEmpty)
+              const Icon(
+                Icons.done_all_rounded,
+                color: Colors.blue,
+                size: 20,
+              ),
             SizedBox(
               width: mq.width * .01,
             ),
             Text(
-              MyDataUnit.getFormattedTime(context: context, time: widget.message.sent),
+              MyDateUtil.getFormattedTime(
+                  context: context, time: widget.message.sent),
               style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ],
@@ -91,7 +119,9 @@ class _MassageCardState extends State<MassageCard> {
               horizontal: mq.width * .04,
               vertical: mq.height * .01,
             ),
-            padding: EdgeInsets.all(mq.width * .04),
+            padding: EdgeInsets.all(widget.message.type == Type.image
+                ? mq.width * .03
+                : mq.width * .04),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.lightGreen),
               borderRadius: const BorderRadius.only(
@@ -101,10 +131,28 @@ class _MassageCardState extends State<MassageCard> {
               ),
               color: const Color.fromARGB(255, 218, 255, 176),
             ),
-            child: Text(
-              widget.message.msg,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            ),
+            child: widget.message.type == Type.text
+                ? Text(
+                    widget.message.msg,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) =>
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                          ),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.image,
+                        size: 70,
+                      ),
+                    ),
+                  ),
           ),
         ),
       ],
