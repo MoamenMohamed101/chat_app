@@ -6,6 +6,7 @@ import 'package:chat_app/helper/dialogs.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/screens/auth/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -40,10 +41,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             backgroundColor: Colors.red,
             onPressed: () async {
               Dialogs.showProgressBar(context);
+              Apis.updateActiveStatus(false);
               await Apis.auth.signOut().then((value) async {
                 await GoogleSignIn().signOut().then((value) {
                   Navigator.pop(context);
                   Navigator.pop(context);
+                  Apis.auth = FirebaseAuth.instance;
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -245,6 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         });
                       }
                       Apis.updateProfilePicture(File(_image!));
+                      // ignore: use_build_context_synchronously
                       Navigator.pop(context);
                     },
                     child: Image.asset('assets/images/camera.png'),

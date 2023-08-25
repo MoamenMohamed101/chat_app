@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class Apis {
@@ -17,6 +19,17 @@ class Apis {
   // for storing self information
   static late ChatUser me;
 
+  static FirebaseMessaging fMessaging = FirebaseMessaging.instance;
+
+  static Future<void> getFireBaseMessagingToken() async {
+    fMessaging.requestPermission();
+    await fMessaging.getToken().then((value) {
+      if(value != null){
+        me.pushToken = value;
+        log('push token: $value');
+      }
+    });
+  }
   // what is method userExists do ? it will check if user exists or not in firebase firestore database
   static Future<bool> userExists() async {
     return (await firebaseFirestore.collection('users').doc(user.uid).get())
@@ -53,6 +66,8 @@ class Apis {
         .then((value) async {
       if (value.exists) {
         me = ChatUser.fromJson(value.data()!);
+        await getFireBaseMessagingToken();
+        Apis.updateActiveStatus(true);
       } else {
         await createUser().then((value) => getSelfInfo());
       }
@@ -101,6 +116,7 @@ class Apis {
     return firebaseFirestore.collection('users').doc(user.uid).update({
       'is_online': isOnline,
       'last active': DateTime.now().millisecondsSinceEpoch.toString(),
+      'push_token': me.pushToken,
     });
   }
 

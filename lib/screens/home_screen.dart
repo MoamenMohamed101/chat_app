@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:chat_app/Api/apis.dart';
 import 'package:chat_app/main.dart';
@@ -26,15 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     Apis.getSelfInfo();
-    Apis.updateActiveStatus(true);
     SystemChannels.lifecycle.setMessageHandler((message) {
-      log('Message : $message');
-      if(message!.contains('paused')) {
-        Apis.updateActiveStatus(false);
-      } else if(message.contains('resumed')) {
-        Apis.updateActiveStatus(true);
+      if (Apis.auth.currentUser != null) {
+        if (message!.contains('paused')) {
+          Apis.updateActiveStatus(false);
+        } else if (message.contains('resumed')) {
+          Apis.updateActiveStatus(true);
+        }
       }
-      return Future.value(message); // what is this line do ? it will return the message that the app received
+      return Future.value(
+          message); // what is this line do ? it will return the message that the app received
     });
   }
 
@@ -92,14 +92,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       border: InputBorder.none,
                       hintText: 'Email,Name,.......',
                     ),
-                    autofocus: true, // what is autofocus ? it is a property that make the textfield focused when the widget is built
+                    autofocus: true,
+                    // what is autofocus ? it is a property that make the textfield focused when the widget is built
                     style: const TextStyle(fontSize: 17, letterSpacing: 0.5),
                     onChanged: (value) {
                       // what is this line do ? it will clear the searchList
                       searchList.clear();
                       // what is this for loop do ? it will loop through the list of users and check if the name or the email of the user contains the value that the user typed in the textfield and if it is true it will add the user to the searchList and then rebuild the widget
                       for (var i in list) {
-                        if (i.name!.toLowerCase().contains(value.toLowerCase()) || i.email!.toLowerCase().contains(value.toLowerCase())) {
+                        if (i.name!
+                                .toLowerCase()
+                                .contains(value.toLowerCase()) ||
+                            i.email!
+                                .toLowerCase()
+                                .contains(value.toLowerCase())) {
                           searchList.add(i);
                         }
                         setState(() {
@@ -136,7 +142,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 case ConnectionState.active:
                 case ConnectionState.done:
                   final data = snapshot.data!.docs;
-                  list = data.map((e) => ChatUser.fromJson(e.data())).toList(); // what this line do ? it convert the data from the stream to a list of ChatUser objects
+                  list = data
+                      .map((e) => ChatUser.fromJson(e.data()))
+                      .toList(); // what this line do ? it convert the data from the stream to a list of ChatUser objects
                   if (list.isNotEmpty) {
                     return ListView.builder(
                       physics: const BouncingScrollPhysics(),

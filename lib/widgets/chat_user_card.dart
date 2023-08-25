@@ -5,6 +5,7 @@ import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:chat_app/screens/chat_screen.dart';
+import 'package:chat_app/widgets/dialogs/profile_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -63,14 +64,22 @@ class _ChatUserCardState extends State<ChatUserCard> {
                     : widget.chatUser.about!,
                 maxLines: 1,
               ),
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(mq.height * .3),
-                child: CachedNetworkImage(
-                  height: mq.height * .055,
-                  width: mq.height * .055,
-                  imageUrl: widget.chatUser.image!,
-                  errorWidget: (context, url, error) => const CircleAvatar(
-                    child: Icon(CupertinoIcons.person),
+              leading: InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => ProfileDialog(chatUser: widget.chatUser),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(mq.height * .3),
+                  child: CachedNetworkImage(
+                    height: mq.height * .055,
+                    width: mq.height * .055,
+                    imageUrl: widget.chatUser.image!,
+                    errorWidget: (context, url, error) => const CircleAvatar(
+                      child: Icon(CupertinoIcons.person),
+                    ),
                   ),
                 ),
               ),
@@ -87,7 +96,7 @@ class _ChatUserCardState extends State<ChatUserCard> {
                           ),
                         )
                       : Text(
-                MyDateUtil.getLastMessageTime(
+                          MyDateUtil.getLastMessageTime(
                             context: context,
                             time: message!.sent,
                           ),
