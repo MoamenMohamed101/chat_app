@@ -45,6 +45,8 @@ dependencies:
   cached_network_image: ^3.2.3
   image_picker: ^0.8.8
   emoji_picker_flutter: ^1.6.1
+  http: ^1.1.0
+  flutter_notification_channel: ^2.0.0
 
 dev_dependencies:
   flutter_test:

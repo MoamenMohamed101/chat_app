@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:chat_app/firebase_options.dart';
 import 'package:chat_app/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_notification_channel/flutter_notification_channel.dart';
+import 'package:flutter_notification_channel/notification_importance.dart';
 
 late Size mq;
 
@@ -51,6 +55,13 @@ class MyApp extends StatelessWidget {
 
 initializeFireBase() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  var result = await FlutterNotificationChannel.registerNotificationChannel(
+    description: 'For Showing Message Notifications',
+    id: 'chats',
+    importance: NotificationImportance.IMPORTANCE_HIGH,
+    name: 'Chats',
+  );
+  log('\nnotification channel result: $result\n');
 }
 //TODO
 // video 38 , 39

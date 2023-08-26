@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -7,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart';
 
 class Apis {
   // what is static line do ? it will create only one instance of FirebaseAuth, FirebaseFirestore, FirebaseStorage
@@ -24,12 +26,51 @@ class Apis {
   static Future<void> getFireBaseMessagingToken() async {
     fMessaging.requestPermission();
     await fMessaging.getToken().then((value) {
-      if(value != null){
+      if (value != null) {
         me.pushToken = value;
         log('push token: $value');
       }
     });
+    // what is this line do ? it will listen to messages that are sent to the current user and handle them
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   log('Got a message whilst in the foreground!');
+    //   log('Message data: ${message.data}');
+    //   if (message.notification != null) {
+    //     log('Message also contained a notification: ${message.notification}');
+    //   }
+    // });
   }
+
+  static Future<void> sendPushNotification(
+      ChatUser chatUser, String msg) async {
+    try {
+      var body = {
+        "to": chatUser.pushToken,
+        "notification": {
+          "title": chatUser.name,
+          "body": msg,
+        },
+        'data' : {
+          'some_data':'User id: ${me.id}'
+        },
+        "android_channel_id": "Chats",
+      };
+      var res = await post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader:
+              'key=AAAASDvZkqE:APA91bFTexgPhTn91ntOBxxdXT1gf12hfpdYdTlZXakLuXF0imVvkE1bOL3xSegZmoyksg4VUBuGGWaZFjg8HL4JrxPmFFVDYAtT2d7hWc8IHz8IPcKw_N-D6rxw5hc7Fhd9yxaVGfmU'
+        },
+        body: jsonEncode(body),
+      );
+      log('Response status: ${res.statusCode}');
+      log('Response body: ${res.body}');
+    } catch (e) {
+      log('Error when sending push notification: $e');
+    }
+  }
+
   // what is method userExists do ? it will check if user exists or not in firebase firestore database
   static Future<bool> userExists() async {
     return (await firebaseFirestore.collection('users').doc(user.uid).get())
@@ -111,8 +152,9 @@ class Apis {
         .where('id', isEqualTo: chatUser.id)
         .snapshots();
   }
+
   // what is method updateActiveStatus do ? it will update user active status in firebase firestore database by adding the time that the user was active to the user
-  static Future<void> updateActiveStatus(bool isOnline){
+  static Future<void> updateActiveStatus(bool isOnline) {
     return firebaseFirestore.collection('users').doc(user.uid).update({
       'is_online': isOnline,
       'last active': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -152,7 +194,9 @@ class Apis {
     );
     final ref = firebaseFirestore
         .collection('chats/${getConversationId(chatUser.id!)}/messages/');
-    await ref.doc(time).set(message.toJson());
+    await ref.doc(time).set(message.toJson()).then((value) {
+      sendPushNotification(chatUser, type == Type.text ? msg : 'image');
+    });
   }
 
   // what is method updateMessageReadStatus do ? it will update message read status in firebase firestore database by adding the time that the message was read to the message

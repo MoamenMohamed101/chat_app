@@ -17,9 +17,13 @@ class MassageCard extends StatefulWidget {
 class _MassageCardState extends State<MassageCard> {
   @override
   Widget build(BuildContext context) {
-    return Apis.user.uid == widget.message.fromId
-        ? greenMessage()
-        : blueMessage(); // if message is from me then show green message else show blue message
+    bool isMe = Apis.user.uid == widget.message.fromId;
+    return InkWell(
+      onLongPress: () {
+        showButtonSheet(isMe);
+      },
+      child: isMe ? greenMessage() : blueMessage(),
+    );
   }
 
   // Other message
@@ -55,18 +59,16 @@ class _MassageCardState extends State<MassageCard> {
                     widget.message.msg,
                     style: const TextStyle(fontSize: 15, color: Colors.black87),
                   )
-                :
-            ClipRRect(
+                : ClipRRect(
                     borderRadius: BorderRadius.circular(15),
                     child: CachedNetworkImage(
                       imageUrl: widget.message.msg,
-                      placeholder: (context, url) =>
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                            ),
-                          ),
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
                       errorWidget: (context, url, error) => const Icon(
                         Icons.image,
                         size: 70,
@@ -140,13 +142,12 @@ class _MassageCardState extends State<MassageCard> {
                     borderRadius: BorderRadius.circular(15),
                     child: CachedNetworkImage(
                       imageUrl: widget.message.msg,
-                      placeholder: (context, url) =>
-                          const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: CircularProgressIndicator(
-                        strokeWidth: 2,
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
                       ),
-                          ),
                       errorWidget: (context, url, error) => const Icon(
                         Icons.image,
                         size: 70,
@@ -156,6 +157,134 @@ class _MassageCardState extends State<MassageCard> {
           ),
         ),
       ],
+    );
+  }
+
+  showButtonSheet(bool isMe) {
+    showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        context: context,
+        builder: (value) {
+          return ListView(
+            shrinkWrap: true,
+            children: [
+              Container(
+                height: 4,
+                margin: EdgeInsets.symmetric(
+                  horizontal: mq.width * .4,
+                  vertical: mq.height * .015,
+                ),
+                decoration: BoxDecoration(
+                    color: Colors.grey, borderRadius: BorderRadius.circular(8)),
+              ),
+              widget.message.type == Type.text ? OptionItem(
+                icon: const Icon(
+                  Icons.copy_all_outlined,
+                  size: 26,
+                  color: Colors.blue,
+                ),
+                name: 'Copy Test',
+                onTap: () {},
+              ) : OptionItem(
+                icon: const Icon(
+                  Icons.download_rounded,
+                  size: 26,
+                  color: Colors.blue,
+                ),
+                name: 'Save Image',
+                onTap: () {},
+              ),
+              if(isMe)
+               Divider(
+                color: Colors.black54,
+                endIndent: mq.width * .04,
+                indent: mq.width * .04,
+              ),
+              if(widget.message.type == Type.text && isMe)
+               OptionItem(
+                icon: const Icon(
+                  Icons.edit,
+                  size: 26,
+                  color: Colors.blue,
+                ),
+                name: 'Edit Message',
+                onTap: () {},
+              ),
+              if(isMe)
+               OptionItem(
+                icon: const Icon(
+                  Icons.delete_forever,
+                  size: 26,
+                  color: Colors.red,
+                ),
+                name: 'Delete Message',
+                onTap: () {},
+              ),
+              Divider(
+                color: Colors.black54,
+                endIndent: mq.width * .04,
+                indent: mq.width * .04,
+              ),
+              OptionItem(
+                icon: const Icon(
+                  Icons.remove_red_eye,
+                  size: 26,
+                  color: Colors.blue,
+                ),
+                name: 'send at: ',
+                onTap: () {},
+              ),
+              OptionItem(
+                icon: const Icon(
+                  Icons.remove_red_eye,
+                  size: 26,
+                  color: Colors.green,
+                ),
+                name: 'Read at: ',
+                onTap: () {},
+              ),
+            ],
+          );
+        });
+  }
+}
+
+class OptionItem extends StatelessWidget {
+  final Icon icon;
+  final String name;
+  final VoidCallback onTap;
+
+  const OptionItem(
+      {super.key, required this.icon, required this.name, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: EdgeInsets.only(
+          left: mq.width * .05,
+          top: mq.height * .020,
+          bottom: mq.width * .015,
+        ),
+        child: Row(
+          children: [
+            icon,
+            Flexible(
+              child: Text(
+                '  $name',
+                style: const TextStyle(
+                    fontSize: 15, color: Colors.black54, letterSpacing: 0.5),
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
