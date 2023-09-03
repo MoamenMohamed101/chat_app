@@ -50,9 +50,7 @@ class Apis {
           "title": chatUser.name,
           "body": msg,
         },
-        'data' : {
-          'some_data':'User id: ${me.id}'
-        },
+        'data': {'some_data': 'User id: ${me.id}'},
         "android_channel_id": "Chats",
       };
       var res = await post(
@@ -123,7 +121,7 @@ class Apis {
         .snapshots();
   }
 
-// what is method updateUserInfo do ? it will update user info in firebase firestore database
+  // what is method updateUserInfo do ? it will update user info in firebase firestore database
   static Future<void> updateUserInfo() async {
     await firebaseFirestore
         .collection('users')
@@ -131,7 +129,7 @@ class Apis {
         .update({'name': me.name, 'about': me.about});
   }
 
-// what is method updateProfilePicture do ? it will update user profile picture in firebase firestore database
+  // what is method updateProfilePicture do ? it will update user profile picture in firebase firestore database
   static Future<void> updateProfilePicture(File file) async {
     final ext = file.path.split('.').last;
     final ref = firebaseStorage.ref().child('profile_picture/${user.uid}.$ext');
@@ -230,4 +228,14 @@ class Apis {
     final imageUrl = await ref.getDownloadURL();
     await sendMessage(imageUrl, chatUser, Type.image);
   }
+
+  static Future<void> deleteMessage(Message message) async {
+    final ref = firebaseFirestore
+        .collection('chats/${getConversationId(message.told)}/messages/');
+    await ref.doc(message.sent).delete();
+    if(message.type == Type.image) {
+      await firebaseStorage.refFromURL(message.msg).delete();
+    }
+  }
+
 }

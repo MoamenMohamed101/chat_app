@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_app/Api/apis.dart';
+import 'package:chat_app/helper/dialogs.dart';
 import 'package:chat_app/helper/my_data_unit.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MassageCard extends StatefulWidget {
   final Message message;
@@ -30,12 +32,13 @@ class _MassageCardState extends State<MassageCard> {
   blueMessage() {
     if (widget.message.read.isEmpty) {
       Apis.updateMessageReadStatus(widget.message);
-      print('Done update');
+      debugPrint('Done update');
     }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+        // what flexible do? it make the container take the space it need
         Flexible(
           child: Container(
             margin: EdgeInsets.symmetric(
@@ -56,25 +59,27 @@ class _MassageCardState extends State<MassageCard> {
             ),
             child: widget.message.type == Type.text
                 ? Text(
-                    widget.message.msg,
-                    style: const TextStyle(fontSize: 15, color: Colors.black87),
-                  )
+              widget.message.msg,
+              style: const TextStyle(fontSize: 15, color: Colors.black87),
+            )
                 : ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.message.msg,
-                      placeholder: (context, url) => const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.image,
-                        size: 70,
-                      ),
-                    ),
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                imageUrl: widget.message.msg,
+                placeholder: (context, url) =>
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
                   ),
+                ),
+                errorWidget: (context, url, error) =>
+                const Icon(
+                  Icons.image,
+                  size: 70,
+                ),
+              ),
+            ),
           ),
         ),
         Padding(
@@ -135,25 +140,27 @@ class _MassageCardState extends State<MassageCard> {
             ),
             child: widget.message.type == Type.text
                 ? Text(
-                    widget.message.msg,
-                    style: const TextStyle(fontSize: 15, color: Colors.black87),
-                  )
+              widget.message.msg,
+              style: const TextStyle(fontSize: 15, color: Colors.black87),
+            )
                 : ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.message.msg,
-                      placeholder: (context, url) => const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => const Icon(
-                        Icons.image,
-                        size: 70,
-                      ),
-                    ),
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                imageUrl: widget.message.msg,
+                placeholder: (context, url) =>
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
                   ),
+                ),
+                errorWidget: (context, url, error) =>
+                const Icon(
+                  Icons.image,
+                  size: 70,
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -182,15 +189,26 @@ class _MassageCardState extends State<MassageCard> {
                 decoration: BoxDecoration(
                     color: Colors.grey, borderRadius: BorderRadius.circular(8)),
               ),
-              widget.message.type == Type.text ? OptionItem(
+              widget.message.type == Type.text
+                  ? OptionItem(
                 icon: const Icon(
                   Icons.copy_all_outlined,
                   size: 26,
                   color: Colors.blue,
                 ),
                 name: 'Copy Test',
-                onTap: () {},
-              ) : OptionItem(
+                onTap: () async {
+                  await Clipboard.setData(
+                    ClipboardData(text: widget.message.msg),
+                  ).then(
+                        (value) {
+                      Navigator.pop(context);
+                      Dialogs.showSnackBar(context, 'Text Copied');
+                    },
+                  );
+                },
+              )
+                  : OptionItem(
                 icon: const Icon(
                   Icons.download_rounded,
                   size: 26,
@@ -199,32 +217,36 @@ class _MassageCardState extends State<MassageCard> {
                 name: 'Save Image',
                 onTap: () {},
               ),
-              if(isMe)
-               Divider(
-                color: Colors.black54,
-                endIndent: mq.width * .04,
-                indent: mq.width * .04,
-              ),
-              if(widget.message.type == Type.text && isMe)
-               OptionItem(
-                icon: const Icon(
-                  Icons.edit,
-                  size: 26,
-                  color: Colors.blue,
+              if (isMe)
+                Divider(
+                  color: Colors.black54,
+                  endIndent: mq.width * .04,
+                  indent: mq.width * .04,
                 ),
-                name: 'Edit Message',
-                onTap: () {},
-              ),
-              if(isMe)
-               OptionItem(
-                icon: const Icon(
-                  Icons.delete_forever,
-                  size: 26,
-                  color: Colors.red,
+              if (widget.message.type == Type.text && isMe)
+                OptionItem(
+                  icon: const Icon(
+                    Icons.edit,
+                    size: 26,
+                    color: Colors.blue,
+                  ),
+                  name: 'Edit Message',
+                  onTap: () {},
                 ),
-                name: 'Delete Message',
-                onTap: () {},
-              ),
+              if (isMe)
+                OptionItem(
+                  icon: const Icon(
+                    Icons.delete_forever,
+                    size: 26,
+                    color: Colors.red,
+                  ),
+                  name: 'Delete Message',
+                  onTap: () async {
+                    await Apis.deleteMessage(widget.message).then((value) {
+                      Navigator.pop(context);
+                    });
+                  },
+                ),
               Divider(
                 color: Colors.black54,
                 endIndent: mq.width * .04,
@@ -236,7 +258,9 @@ class _MassageCardState extends State<MassageCard> {
                   size: 26,
                   color: Colors.blue,
                 ),
-                name: 'send at: ',
+                name:
+                'send at: ${MyDateUtil.getMessageTime(
+                    context: context, time: widget.message.sent)}',
                 onTap: () {},
               ),
               OptionItem(
@@ -245,7 +269,10 @@ class _MassageCardState extends State<MassageCard> {
                   size: 26,
                   color: Colors.green,
                 ),
-                name: 'Read at: ',
+                name: widget.message.read.isEmpty
+                    ? ' Read At: Not seen yet'
+                    : 'Read at: ${MyDateUtil.getMessageTime(
+                    context: context, time: widget.message.read)}',
                 onTap: () {},
               ),
             ],
@@ -279,7 +306,10 @@ class OptionItem extends StatelessWidget {
               child: Text(
                 '  $name',
                 style: const TextStyle(
-                    fontSize: 15, color: Colors.black54, letterSpacing: 0.5),
+                  fontSize: 15,
+                  color: Colors.black54,
+                  letterSpacing: 0.5,
+                ),
               ),
             )
           ],
