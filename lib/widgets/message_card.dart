@@ -277,7 +277,7 @@ class _MassageCardState extends State<MassageCard> {
               ),
             ],
           );
-        });
+        },);
   }
 }
 

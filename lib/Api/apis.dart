@@ -237,5 +237,4 @@ class Apis {
       await firebaseStorage.refFromURL(message.msg).delete();
     }
   }
-
 }
