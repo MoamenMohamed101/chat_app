@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chat_app/Api/apis.dart';
+import 'package:chat_app/helper/dialogs.dart';
 import 'package:chat_app/main.dart';
 import 'package:chat_app/models/chat_user.dart';
 import 'package:chat_app/screens/profile_screen.dart';
@@ -119,7 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
           floatingActionButton: Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                addChatUserDialog();
+              },
               child: const Icon(Icons.add_comment_rounded),
             ),
           ),
@@ -143,15 +146,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 case ConnectionState.done:
                   final data = snapshot.data!.docs;
                   list = data
-                      .map((e) => ChatUser.fromJson(e.data()))
+                      .map(
+                        (e) => ChatUser.fromJson(
+                          e.data(),
+                        ),
+                      )
                       .toList(); // what this line do ? it convert the data from the stream to a list of ChatUser objects
                   if (list.isNotEmpty) {
                     return ListView.builder(
                       physics: const BouncingScrollPhysics(),
                       padding: EdgeInsets.only(top: mq.height * .01),
                       itemBuilder: (context, index) => ChatUserCard(
-                          chatUser:
-                              isSearching ? searchList[index] : list[index]),
+                        chatUser: isSearching ? searchList[index] : list[index],
+                      ),
                       itemCount: isSearching ? searchList.length : list.length,
                     );
                   } else {
@@ -163,6 +170,86 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+      ),
+    );
+  }
+
+  addChatUserDialog() {
+    String email = '';
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        contentPadding:
+            const EdgeInsets.only(left: 24, right: 24, top: 20, bottom: 10),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          ),
+        ),
+        title: const Row(
+          children: [
+            Icon(
+              Icons.person_add,
+              color: Colors.blue,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              'Add user',
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: TextFormField(
+          maxLines: null,
+          onChanged: (value) => email = value,
+          decoration: InputDecoration(
+            hintText: 'Email Id',
+            prefixIcon: const Icon(
+              Icons.email,
+              color: Colors.blue,
+            ),
+            hintStyle: const TextStyle(
+              color: Colors.black54,
+              fontSize: 15,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Cancel",
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+          MaterialButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              if (email.isNotEmpty) {
+                await Apis.addChatUser(email).then((value) {
+                  if (!value) {
+                    Dialogs.showSnackBar(context, 'User not found !');
+                  }
+                });
+              }
+            },
+            child: const Text(
+              "Add",
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -75,6 +75,31 @@ class Apis {
         .exists;
   }
 
+  // what is method addChatUser do ? it will add user to the current user's my_users collection in firebase firestore database and return true if the user exists
+  static Future<bool> addChatUser(String email) async {
+    final data = await firebaseFirestore
+        .collection('users')
+        .where("email",
+            isEqualTo:
+                email) // what is this line do ? it will get the user that has the same email that the user typed in the textfield
+        .get();
+    log("Data ${data.docs}");
+    if (data.docs.isNotEmpty && data.docs.first.id != user.uid) {
+      log("user exists : ${data.docs.first.data()}");
+      // what is this line do ? it will add the user to the current user's my_users collection in firebase firestore database and return true if the user exists
+      firebaseFirestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('my_users')
+          .doc(data.docs.first.id)
+          .set({});
+      return true;
+    } else {
+      // what is this line do ? it will return false if the user doesn't exist
+      return false;
+    }
+  }
+
   // what is method createUser do ? it will create user in firebase firestore database with user's information
   static Future<void> createUser() async {
     final time = DateTime.now().millisecondsSinceEpoch.toString();
@@ -115,9 +140,18 @@ class Apis {
 
   // what is method getAllUsers do ? it will return all users except current user from firebase firestore database as a stream of QuerySnapshot<Map<String, dynamic>>
   static Stream<QuerySnapshot<Map<String, dynamic>>> getAllUsers() {
+
     return firebaseFirestore
         .collection('users')
         .where('id', isNotEqualTo: user.uid)
+        .snapshots();
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getMyUsersId() {
+    return firebaseFirestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('my_users')
         .snapshots();
   }
 
@@ -233,8 +267,17 @@ class Apis {
     final ref = firebaseFirestore
         .collection('chats/${getConversationId(message.told)}/messages/');
     await ref.doc(message.sent).delete();
-    if(message.type == Type.image) {
+    if (message.type == Type.image) {
       await firebaseStorage.refFromURL(message.msg).delete();
     }
+  }
+
+  static Future<void> updateMessage(
+      Message message, String updatingMessage) async {
+    final ref = firebaseFirestore
+        .collection('chats/${getConversationId(message.told)}/messages/');
+    await ref.doc(message.sent).update(
+      {'msg': updatingMessage},
+    );
   }
 }

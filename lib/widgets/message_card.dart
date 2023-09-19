@@ -6,6 +6,7 @@ import 'package:chat_app/main.dart';
 import 'package:chat_app/models/message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 class MassageCard extends StatefulWidget {
   final Message message;
@@ -59,27 +60,25 @@ class _MassageCardState extends State<MassageCard> {
             ),
             child: widget.message.type == Type.text
                 ? Text(
-              widget.message.msg,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            )
+                    widget.message.msg,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  )
                 : ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: CachedNetworkImage(
-                imageUrl: widget.message.msg,
-                placeholder: (context, url) =>
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.image,
+                        size: 70,
+                      ),
+                    ),
                   ),
-                ),
-                errorWidget: (context, url, error) =>
-                const Icon(
-                  Icons.image,
-                  size: 70,
-                ),
-              ),
-            ),
           ),
         ),
         Padding(
@@ -140,27 +139,25 @@ class _MassageCardState extends State<MassageCard> {
             ),
             child: widget.message.type == Type.text
                 ? Text(
-              widget.message.msg,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
-            )
+                    widget.message.msg,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  )
                 : ClipRRect(
-              borderRadius: BorderRadius.circular(15),
-              child: CachedNetworkImage(
-                imageUrl: widget.message.msg,
-                placeholder: (context, url) =>
-                const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
+                    borderRadius: BorderRadius.circular(15),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.message.msg,
+                      placeholder: (context, url) => const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => const Icon(
+                        Icons.image,
+                        size: 70,
+                      ),
+                    ),
                   ),
-                ),
-                errorWidget: (context, url, error) =>
-                const Icon(
-                  Icons.image,
-                  size: 70,
-                ),
-              ),
-            ),
           ),
         ),
       ],
@@ -169,115 +166,202 @@ class _MassageCardState extends State<MassageCard> {
 
   showButtonSheet(bool isMe) {
     showModalBottomSheet(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
-        context: context,
-        builder: (value) {
-          return ListView(
-            shrinkWrap: true,
-            children: [
-              Container(
-                height: 4,
-                margin: EdgeInsets.symmetric(
-                  horizontal: mq.width * .4,
-                  vertical: mq.height * .015,
-                ),
-                decoration: BoxDecoration(
-                    color: Colors.grey, borderRadius: BorderRadius.circular(8)),
+      ),
+      context: context,
+      builder: (value) {
+        return ListView(
+          shrinkWrap: true,
+          children: [
+            Container(
+              height: 4,
+              margin: EdgeInsets.symmetric(
+                horizontal: mq.width * .4,
+                vertical: mq.height * .015,
               ),
-              widget.message.type == Type.text
-                  ? OptionItem(
-                icon: const Icon(
-                  Icons.copy_all_outlined,
-                  size: 26,
-                  color: Colors.blue,
-                ),
-                name: 'Copy Test',
-                onTap: () async {
-                  await Clipboard.setData(
-                    ClipboardData(text: widget.message.msg),
-                  ).then(
+              decoration: BoxDecoration(
+                  color: Colors.grey, borderRadius: BorderRadius.circular(8)),
+            ),
+            widget.message.type == Type.text
+                ? OptionItem(
+                    icon: const Icon(
+                      Icons.copy_all_outlined,
+                      size: 26,
+                      color: Colors.blue,
+                    ),
+                    name: 'Copy Test',
+                    onTap: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: widget.message.msg),
+                      ).then(
                         (value) {
-                      Navigator.pop(context);
-                      Dialogs.showSnackBar(context, 'Text Copied');
+                          Navigator.pop(context);
+                          Dialogs.showSnackBar(context, 'Text Copied');
+                        },
+                      );
                     },
-                  );
-                },
-              )
-                  : OptionItem(
-                icon: const Icon(
-                  Icons.download_rounded,
-                  size: 26,
-                  color: Colors.blue,
-                ),
-                name: 'Save Image',
-                onTap: () {},
-              ),
-              if (isMe)
-                Divider(
-                  color: Colors.black54,
-                  endIndent: mq.width * .04,
-                  indent: mq.width * .04,
-                ),
-              if (widget.message.type == Type.text && isMe)
-                OptionItem(
-                  icon: const Icon(
-                    Icons.edit,
-                    size: 26,
-                    color: Colors.blue,
+                  )
+                : OptionItem(
+                    icon: const Icon(
+                      Icons.download_rounded,
+                      size: 26,
+                      color: Colors.blue,
+                    ),
+                    name: 'Save Image',
+                    onTap: () async {
+                      try {
+                        Navigator.pop(context);
+                        await GallerySaver.saveImage(widget.message.msg,
+                                albumName: "Chatty")
+                            .then((success) {
+                          if (success != null && success) {
+                            Dialogs.showSnackBar(context, 'Image Saved');
+                          } else {
+                            const CircularProgressIndicator();
+                          }
+                        });
+                      } catch (e) {
+                        debugPrint(e.toString());
+                      }
+                    },
                   ),
-                  name: 'Edit Message',
-                  onTap: () {},
-                ),
-              if (isMe)
-                OptionItem(
-                  icon: const Icon(
-                    Icons.delete_forever,
-                    size: 26,
-                    color: Colors.red,
-                  ),
-                  name: 'Delete Message',
-                  onTap: () async {
-                    await Apis.deleteMessage(widget.message).then((value) {
-                      Navigator.pop(context);
-                    });
-                  },
-                ),
+            if (isMe)
               Divider(
                 color: Colors.black54,
                 endIndent: mq.width * .04,
                 indent: mq.width * .04,
               ),
+            if (widget.message.type == Type.text && isMe)
               OptionItem(
                 icon: const Icon(
-                  Icons.remove_red_eye,
+                  Icons.edit,
                   size: 26,
                   color: Colors.blue,
                 ),
-                name:
-                'send at: ${MyDateUtil.getMessageTime(
-                    context: context, time: widget.message.sent)}',
-                onTap: () {},
+                name: 'Edit Message',
+                onTap: () {
+                  Navigator.pop(context);
+                  showMessageUpdateDialog();
+                },
               ),
+            if (isMe)
               OptionItem(
                 icon: const Icon(
-                  Icons.remove_red_eye,
+                  Icons.delete_forever,
                   size: 26,
-                  color: Colors.green,
+                  color: Colors.red,
                 ),
-                name: widget.message.read.isEmpty
-                    ? ' Read At: Not seen yet'
-                    : 'Read at: ${MyDateUtil.getMessageTime(
-                    context: context, time: widget.message.read)}',
-                onTap: () {},
+                name: 'Delete Message',
+                onTap: () async {
+                  await Apis.deleteMessage(widget.message).then((value) {
+                    Navigator.pop(context);
+                  });
+                },
               ),
-            ],
-          );
-        },);
+            Divider(
+              color: Colors.black54,
+              endIndent: mq.width * .04,
+              indent: mq.width * .04,
+            ),
+            OptionItem(
+              icon: const Icon(
+                Icons.remove_red_eye,
+                size: 26,
+                color: Colors.blue,
+              ),
+              name:
+                  'send at: ${MyDateUtil.getMessageTime(context: context, time: widget.message.sent)}',
+              onTap: () {},
+            ),
+            OptionItem(
+              icon: const Icon(
+                Icons.remove_red_eye,
+                size: 26,
+                color: Colors.green,
+              ),
+              name: widget.message.read.isEmpty
+                  ? ' Read At: Not seen yet'
+                  : 'Read at: ${MyDateUtil.getMessageTime(context: context, time: widget.message.read)}',
+              onTap: () {},
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showMessageUpdateDialog() {
+    String updateMessage = widget.message.msg;
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        contentPadding: const EdgeInsets.only(left: 24 , right: 24 , top: 20 , bottom: 10),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          ),
+        ),
+        title: const Row(
+          children: [
+            Icon(
+              Icons.edit,
+              color: Colors.blue,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              'Edit Message',
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: TextFormField(
+          initialValue: widget.message.msg,
+          maxLines: null,
+          onChanged: (value) => updateMessage = value,
+          decoration: InputDecoration(
+            hintText: 'Enter your message',
+            hintStyle: const TextStyle(
+              color: Colors.black54,
+              fontSize: 15,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Cancel",
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+          MaterialButton(
+            onPressed: () {
+              Apis.updateMessage(widget.message, updateMessage);
+              Navigator.pop(context);
+            },
+            child: const Text(
+              "Update",
+              style: TextStyle(color: Colors.blue, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
